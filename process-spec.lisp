@@ -174,25 +174,23 @@
           (clps-current-argument c) nil)))
 
 (defun parse-process-spec (spec)
-  (macrolet ((make-sequence-instance (spec-type args)
-               `(make-instance
-                 ',spec-type :processes
-                 (loop :for process :in (mapcar 'parse-process-spec ,args)
-                    :nconc (etypecase process
-                             (,spec-type (sequence-processes process))
-                             (sequence-spec (list process))
-                             (command-spec (list process)))))))
+  (labels ((make-sequence-instance (spec-type args)
+             (make-instance spec-type :processes
+              (loop :for process :in (mapcar 'parse-process-spec args)
+                    :nconc (if (typep process spec-type)
+                               (sequence-processes process)
+                               (list process))))))
     (match spec
       (`(pipe ,@args)
-        (make-sequence-instance pipe-spec args))
+        (make-sequence-instance 'pipe-spec args))
       (`(or ,@args)
-        (make-sequence-instance or-spec args))
+        (make-sequence-instance 'or-spec args))
       (`(and ,@args)
-        (make-sequence-instance and-spec args))
+        (make-sequence-instance 'and-spec args))
       (`(progn ,@args)
-        (make-sequence-instance progn-spec args))
+        (make-sequence-instance 'progn-spec args))
       (`(fork ,@args)
-        (make-sequence-instance fork-spec args))
+        (make-sequence-instance 'fork-spec args))
       (`(,_ ,@_)
         (let ((c (make-instance 'command-parse)))
           (dolist (elem spec)
