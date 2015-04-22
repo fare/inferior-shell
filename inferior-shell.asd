@@ -2,7 +2,7 @@
 
 (defsystem "inferior-shell"
   :description "spawn local or remote processes and shell pipes"
-  :version "2.0.2"
+  :version "2.0.3"
   :defsystem-depends-on (:asdf #-asdf3 "uiop")
   :depends-on ((:version #+asdf3 "asdf" #-asdf3 "uiop" "3.0.3") ; input and error-output redirection
                #+sbcl "sb-posix"

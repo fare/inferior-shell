@@ -55,7 +55,7 @@
                 &key time show host (on-error t)
                 &allow-other-keys)
   "run command CMD"
-  (when (eq on-error t) (setf on-error 'signal))
+  (when (eq on-error t) (setf on-error 'error))
   (when show
     (format *trace-output* "; ~A~%" (print-process-spec cmd)))
   (flet ((run-it ()
