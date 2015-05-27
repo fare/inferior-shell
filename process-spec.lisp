@@ -235,56 +235,85 @@
          (r (make-close-redirection old)))
        (c (x)
          (match x
-           (`(! ,fd ,pn ,@flags) (f '! fd pn flags))
-           (`(- ,fd) (cl fd))
-           (`(< ,pn) (c `(< 0 ,pn)))
-           (`(< ,fd ,pn)
+           (`(! ,fd ,pn ,@flags) (c `(:open ,fd ,pn ,@flags)))
+           (`(:open ,fd ,pn ,@flags) (f '! fd pn flags))
+
+           (`(- ,fd) (c `(:close ,fd)))
+           (`(:close ,fd) (cl fd))
+
+           (`(< ,@args) (c `(:input ,@args)))
+           (`(:input ,pn) (c `(:input 0 ,pn)))
+           (`(:input ,fd ,pn)
              (f '< fd pn
                 '(:input :if-does-not-exist :error)))
-           (`(<> ,pn) (c `(<> 0 ,pn)))
-           (`(<> ,fd ,pn)
+
+           (`(<> ,@args) (c `(:io ,@args)))
+           (`(:io ,pn) (c `(:io 0 ,pn)))
+           (`(:io ,fd ,pn)
              (f '<> fd pn
                 '(:io :if-exists :overwrite :if-does-not-exist :error)))
-           (`(> ,pn) (c `(> 1 ,pn)))
-           (`(> ,fd ,pn)
+
+           (`(> ,@args) (c `(:output ,@args)))
+           (`(:output ,pn) (c `(:output 1 ,pn)))
+           (`(:output ,fd ,pn)
              (f '> fd pn
                 '(:output :if-exists :error :if-does-not-exist :create)))
-           (`(>! ,pn) (c `(>! 1 ,pn)))
-           (`(>! ,fd ,pn)
+
+           (`(:error-output ,pn) (c `(:output 2 ,pn)))
+
+
+           (`(>! ,@args) (c `(:force-output ,@args)))
+           (`(:force-output ,pn) (c `(:force-output 1 ,pn)))
+           (`(:force-output ,fd ,pn)
              (f '>! fd pn
                 '(:output :if-exists :supersede :if-does-not-exist :create)))
-           (`(>> ,pn) (c `(>> 1 ,pn)))
-           (`(>> ,fd ,pn)
+
+           (`(>> ,@args) (c `(:append ,@args)))
+           (`(:append ,pn) (c `(:append 1 ,pn)))
+           (`(:append ,fd ,pn)
              (f '>> fd pn
                 '(:output :if-exists :append :if-does-not-exist :error)))
-           (`(>>! ,pn) (c `(>> 1 ,pn)))
-           (`(>>! ,fd ,pn)
+
+           (`(>>! ,@args) (c `(:force-append ,@args)))
+           (`(:force-append ,pn) (c `(:append 1 ,pn)))
+           (`(:force-append ,fd ,pn)
              (f '>>! fd pn
                 '(:output :if-exists :append :if-does-not-exist :create)))
-           (`(<& ,old-fd -)
+
+           (`(<& ,@args) (c `(:redirect-input ,@args)))
+           (`(:redirect-input ,old-fd -)
              (cl old-fd))
-           (`(<& ,new-fd ,old-fd)
+           (`(:redirect-input ,new-fd ,old-fd)
              (fd old-fd new-fd))
-           (`(>& ,old-fd -)
-             (cl old-fd))
-           (`(>& ,new-fd ,old-fd)
-             (fd old-fd new-fd))
-           (`(<& -)
+           (`(:redirect-input -)
              (cl 0))
-           (`(>& -)
+
+           (`(>& ,@args) (c `(:redirect-output ,@args)))
+           (`(:redirect-output ,old-fd -)
+             (cl old-fd))
+           (`(:redirect-output ,new-fd ,old-fd)
+             (fd old-fd new-fd))
+           (`(:redirect-output -)
              (cl 1))
-           (`(>& ,pn)
-             (c `(> 1 ,pn))
-             (c `(>& 2 1)))
-           (`(>&! ,pn)
-             (c `(>! 1 ,pn))
-             (c `(>& 2 1)))
-           (`(>>& ,pn)
+           (`(:redirect-output ,pn)
+             (c `(:output 1 ,pn))
+             (c `(:redirect-output 2 1)))
+
+           (`(>&! ,pn) (c `(:force-redirect ,pn)))
+           (`(:force-redirect ,pn)
+             (c `(:force-output 1 ,pn))
+             (c `(:redirect-output 2 1)))
+
+           (`(>>& ,pn) (c `(:redirect-append ,pn)))
+           (`(:redirect-append ,pn)
              (c `(>> 1 ,pn))
              (c `(>& 2 1)))
-           (`(>>&! ,pn)
+
+           (`(>>&! ,pn) (c `(:force-redirect-append ,pn)))
+           (`(:force-redirect-append ,pn)
              (c `(>>! 1 ,pn))
              (c `(>& 2 1)))
+
            (_
             (flush-argument c)
             (parse-command-spec-token c x)
