@@ -54,7 +54,7 @@
 (defun run/nil (cmd &rest keys
                 &key time show host (on-error t)
                 &allow-other-keys)
-  "run command CMD"
+  "run command CMD. Unless otherwise specified, discard the subprocess's output and error-output."
   (when (eq on-error t) (setf on-error 'error))
   (when show
     (format *trace-output* "; ~A~%" (print-process-spec cmd)))
@@ -68,25 +68,28 @@
 
 (defun run (cmd &rest keys
             &key on-error time show host (output t op) (error-output t eop) &allow-other-keys)
-  "run command CMD"
+  "run command CMD. Unless otherwise specified, copy the subprocess's output to *standard-output*
+  and its error-output to *error-output*."
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd `(,@(unless op `(:output ,output))
                         ,@(unless eop `(:error-output ,error-output))
                         ,@keys)))
 
 (defun run/s (cmd &rest keys &key on-error time show host)
-  "run command CMD, return its standard output results as a string."
+  "run command CMD, return its standard output results as a string.
+  Unless otherwise specified, discard its error-output."
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd :output 'string keys))
 
 (defun run/ss (cmd &rest keys &key on-error time show host)
-  "Like run/s, but strips the line ending off the result string;
-very much like `cmd` or $(cmd) at the shell"
+  "run command CMD, return its standard output results as a string like run/s,
+  but strips the line ending off the result string very much like `cmd` or $(cmd) at the shell"
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd :output :string/stripped keys))
 
 (defun run/interactive (cmd &rest keys &key on-error time show host)
-  "run command CMD interactively."
+  "run command CMD interactively, connecting the subprocess's input, output and error-output
+  to the same file descriptors as the current process"
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd :input :interactive :output :interactive :error-output :interactive keys))
 
@@ -99,6 +102,7 @@ very much like `cmd` or $(cmd) at the shell"
   (slurp-stream-string/stripped input-stream))
 
 (defun run/lines (cmd &rest keys &key on-error time show host)
-  "Like run/s, but return a list of lines rather than one string"
+  "run command CMD, return its standard output results as a list of strings, one per line,
+discarding line terminators. Unless otherwise specified, discard error-output."
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd :output :lines keys))
