@@ -1,13 +1,13 @@
 ;;; -*- Lisp -*-
+#-asdf3 (error "inferior-shell requires ASDF 3.0.3 or later")
 
 (defsystem "inferior-shell"
-  :version "2.0.3.1"
+  :version "2.0.3.2"
   :description "spawn local or remote processes and shell pipes"
   :author "Francois-Rene Rideau"
   :license "MIT"
-  :defsystem-depends-on (:asdf #-asdf3 "uiop")
-  :depends-on ((:version #+asdf3 "asdf" #-asdf3 "uiop" "3.0.3") ; input and error-output redirection
-               #+sbcl "sb-posix"
+  :depends-on ((:version "asdf" "3.0.3") ; input and error-output redirection
+               #+sbcl (:require "sb-posix")
                "alexandria" "optima"
                "fare-utils" "fare-quasiquote-extras" "fare-mop")
   :around-compile "uiop:call-with-safe-io-syntax" ;; ensures that quasiquote syntax doesn't escape
@@ -19,11 +19,10 @@
    (:file "host" :depends-on ("pkgdcl"))
    (:file "run" :depends-on ("process-spec" "macros"))
    (:file "run-generic" :depends-on ("process-spec" "macros"))
-   #+asdf3
    (:file "run-sbcl" :depends-on ("process-spec" "macros" "run-generic")
           :if-feature (:and :sbcl :sb-thread :unix)))
   :in-order-to ((test-op (load-op "inferior-shell/test")))
-  :perform (test-op :after (o s) ;; symbol-call will only work if loaded with ASDF3
+  :perform (test-op (o s) ;; symbol-call will only work if loaded with ASDF3
               (symbol-call :inferior-shell-test :test-suite)))
 
 (defsystem "inferior-shell/test"
