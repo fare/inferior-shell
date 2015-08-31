@@ -27,14 +27,15 @@ The name inferior-shell was suggested by Michael Livshin,
 as inspired by the equivalent notion in GNU Emacs.
 
 Example use of inferior-shell, from the rpm system:
-(defun rpms-installed (&key (packagenames t) host)
-  (run/lines
-   `(pipe (rpm -qa)
-          ,@(unless (eq packagenames t)
-              `((egrep ("^(" ,@(loop :for (name . more) :on packagenames
-                                 :collect name :when more :collect "|")
-                             ")-[^-]+(-[^-]+)?$")))))
-   :host host))
+
+    (defun rpms-installed (&key (packagenames t) host)
+      (run/lines
+       `(pipe (rpm -qa)
+              ,@(unless (eq packagenames t)
+                  `((egrep ("^(" ,@(loop :for (name . more) :on packagenames
+                                     :collect name :when more :collect "|")
+                                 ")-[^-]+(-[^-]+)?$")))))
+       :host host))
 
 
 Limitations
@@ -101,75 +102,78 @@ that exports the following macros and functions:
 
 * `RUN CMD &KEY ON-ERROR TIME SHOW HOST OUTPUT`
 
-  RUN will execute the given command CMD, which can be
-  a CONS to be parsed by PARSE-PROCESS-SPEC,
-  a PROCESS-SPEC object already parsed,
+  `RUN` will execute the given command `CMD`, which can be
+  a `CONS` to be parsed by `PARSE-PROCESS-SPEC`,
+  a `PROCESS-SPEC` object already parsed,
   or a string to be passed to a Unix shell.
-  ON-ERROR specifies behavior in case the command doesn't successfully exit
-  with exit code 0. NIL means continue and return the error code;
-  T (default) means signal the error (same as :ON-ERROR 'SIGNAL);
-  any other value is called as by UIOP:CALL-FUNCTION with the condition as argument,
-  and if it returns, its return values are returned by RUN.
-  TIME is a boolean which if true causes the execution to be timed as per TIME.
-  SHOW is a boolean which if true causes a message to be sent
-  to the *TRACE-OUTPUT* before execution.
-  HOST is either NIL (execute on localhost) or a string specifying a host
-  on which to run the command using ssh if
-  it's not an alias for localhost as recognized by CURRENT-HOST-NAME-P
-  (be sure to have passphraseless  login using ssh-agent).
-  The INPUT, OUTPUT and ERROR-OUTPUT arguments are as for UIOP:RUN-PROGRAM,
-  except that they default to NIL, T, T respectively instead of NIL, NIL, NIL.
-  In particular, OUTPUT is as per UIOP:SLURP-OUTPUT-STREAM one of
-  NIL for no output (redirect to /dev/null),
+  `ON-ERROR` specifies behavior in case the command doesn't successfully exit
+  with exit code 0. `NIL` means continue and return the error code;
+  `T` (default) means signal the error (same as `:ON-ERROR 'SIGNAL`);
+  any other value is called as by `UIOP:CALL-FUNCTION` with the condition as argument,
+  and if it returns, its return values are returned by `RUN`.
+  `TIME` is a boolean which if true causes the execution to be timed as per TIME.
+  `SHOW` is a boolean which if true causes a message to be sent
+  to the `*TRACE-OUTPUT*` before execution.
+  `HOST` is either `NIL` (execute on localhost) or a string specifying a host
+  on which to run the command using `ssh` if
+  it's not an alias for localhost as recognized by `CURRENT-HOST-NAME-P`
+  (be sure to have passphraseless login using `ssh-agent`).
+  The `INPUT`, `OUTPUT` and `ERROR-OUTPUT` arguments are as for `UIOP:RUN-PROGRAM`,
+  except that they default to `NIL`, `T`, `T` respectively instead of `NIL`, `NIL`, `NIL`.
+  In particular, `OUTPUT` is as per `UIOP:SLURP-OUTPUT-STREAM` one of
+  `NIL` for no output (redirect to `/dev/null`),
   a stream for itself,
-  T (default) for the current *standard-output*,
-  :INTERACTIVE for inheriting the parent process's stdout,
-  :LINES for returning one result per line,
-  :STRING for returning the output as one big string,
-  :STRING/STRIPPED is like :STRING
+  `T` (default) for the current `*standard-output*`,
+  `:INTERACTIVE` for inheriting the parent process's stdout,
+  `:LINES` for returning one result per line,
+  `:STRING` for returning the output as one big string,
+  `:STRING/STRIPPED` is like `:STRING`
   but strips any line-ending at the end of the results,
-  just like a shell's `cmd` or $(cmd) would, and
+  just like a shell's ``cmd`` or `$(cmd)` would, and
   more options are accepted and you can define your own, as per
   asdf-driver's slurp-input-stream protocol.
-  On Windows, RUN will not succeed for pipes, only for simple commands.
+  On Windows, `RUN` will not succeed for pipes, only for simple commands.
   On Unix, simple commands on localhost are executed directly, but
   remote commands and pipes are executed by spawning a shell.
 
 * `RUN/NIL CMD &KEY ON-ERROR TIME SHOW HOST`
 
-  RUN/NIL is a shorthand for RUN with :INPUT :OUTPUT :ERROR-OUTPUT bound to NIL.
+  `RUN/NIL` is a shorthand for `RUN` with `:INPUT` `:OUTPUT` `:ERROR-OUTPUT` bound to `NIL`.
 
 
 * `RUN/S CMD &KEY ON-ERROR TIME SHOW HOST`
 
-  RUN/S is a shorthand for RUN with :OUTPUT bound to :STRING,
+  `RUN/S` is a shorthand for `RUN` with `:OUTPUT` bound to `:STRING`,
   returning as a string what the inferior command sent to its standard output.
 
 * `RUN/SS CMD &KEY ON-ERROR TIME SHOW HOST`
 
-  RUN/S is a shorthand for RUN :OUTPUT :STRING/STRIPPED,
-  just like a shell's `cmd` or $(cmd) would do.
+  `RUN/S` is a shorthand for `RUN :OUTPUT :STRING/STRIPPED`,
+  just like a shell's ``cmd`` or `$(cmd)` would do.
 
 
 * `RUN/INTERACTIVE CMD &KEY ON-ERROR TIME SHOW HOST`
 
-  RUN/INTERACTIVE is a shorthand for RUN with :INPUT :OUTPUT :ERROR-OUTPUT
-  all bound to :INTERACTIVE, so you may run commands that interact with users,
+  `RUN/INTERACTIVE` is a shorthand for `RUN` with `:INPUT` `:OUTPUT` `:ERROR-OUTPUT`
+  all bound to `:INTERACTIVE`, so you may run commands that interact with users,
   inheritting the stdin, stdout and stderr of the current process.
-  RUN/I is a shorthand alias for RUN/INTERACTIVE
+
+* `RUN/I CMD &KEY KEYS`
+
+  `RUN/I` is a shorthand alias for `RUN/INTERACTIVE`
 
 * `RUN/LINES CMD &KEY ON-ERROR TIME SHOW HOST`
 
-  run/lines is a shorthand for RUN :OUTPUT :LINES,
+  `RUN/LINES` is a shorthand for `RUN :OUTPUT :LINES`,
   returning as a list of one string per line (stripped of line-ending)
   what the inferior command sent to its standard output.
 
 * `*BACKEND*`
 
   a variable to choose between backends. Currently, only supported are
-  :AUTO (the default, using asdf-driver:run-program, and
+  `:AUTO` (the default, using asdf-driver:run-program, and
   spawning a shell unless it's a simple process), and
-  :SBCL (only available on #+(and sbcl sb-thread unix),
+  `:SBCL` (only available on `#+(and sbcl sb-thread unix)`,
   doesn't need a shell but has some limitations such as
   only supporting redirection of stdin, stdout, stderr),
   and is not recommended (and not actively supported at the moment).
