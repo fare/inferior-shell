@@ -2,7 +2,7 @@
 #-asdf3 (error "inferior-shell requires ASDF 3.0.3 or later")
 
 (defsystem "inferior-shell"
-  :version "2.0.3.2"
+  :version "2.0.3.3"
   :description "spawn local or remote processes and shell pipes"
   :author "Francois-Rene Rideau"
   :license "MIT"

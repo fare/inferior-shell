@@ -143,6 +143,10 @@ or an indication of failure via the EXIT-CODE of the process"
   (declare (ignore on-error time show host))
   (apply 'run/nil cmd :input :interactive :output :interactive :error-output :interactive keys))
 
+(defun run/i (cmd &rest keys)
+  "alias for run/interactive"
+  (apply 'run/interactive cmd keys))
+
 (defun run/lines (cmd &rest keys &key on-error time show host)
   "run command CMD, return its standard output results as a list of strings, one per line,
 discarding line terminators. Unless otherwise specified, discard error-output.
