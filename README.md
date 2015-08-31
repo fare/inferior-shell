@@ -1,4 +1,8 @@
-INFERIOR-SHELL
+INFERIOR-SHELL: spawning shell commands and pipes from Common Lisp
+==================================================================
+
+What is inferior-shell?
+-----------------------
 
 This CL library allows you to spawn local or remote processes and shell pipes.
 It lets me use CL in many cases where I would previously write shell scripts.
@@ -33,9 +37,10 @@ Example use of inferior-shell, from the rpm system:
    :host host))
 
 
-==== Limitations ====
+Limitations
+-----------
 
-By default, inferior-shell uses asdf-driver:run-program
+By default, inferior-shell uses uiop:run-program
 as its universal execution backend, and has its limitations,
 which are as follows.
 
@@ -46,31 +51,28 @@ IOlib requires C compilation and linking, and may or may not support Windows.
 executor only supports select implementations.
 A future extension to inferior-shell may use IOlib as a backend.
 
-Second, there is currently limited support for input redirection.
-The only possible input redirection is from /dev/null
-or by inheriting the parent's standard input
-when running in :interactive mode.
-However, using shell redirection, you can also redirect input from a file,
-or from a numbered file descriptor (except 0, 1, 2).
-
-Finally, supported platforms at this time include:
+Second, supported platforms at this time include:
 ABCL, Allegro, CLISP, ClozureCL, CMUCL, ECL, LispWorks, RMCL, SBCL, SCL, XCL.
 Platforms NOT (yet) supported include:
 CormanLisp (untested), GCL (untested), Genera (unimplemented), MKCL (untested).
 On supported platforms, inferior-shell works on both Unix and Windows.
 
 
-==== Exported Functionality ====
+Exported Functionality
+----------------------
 
 The inferior-shell library creates a package INFERIOR-SHELL,
 that exports the following macros and functions:
 
-PARSE-PROCESS-SPEC SPEC
+* `PARSE-PROCESS-SPEC SPEC`
+
   parse an expression in the process-spec mini-language into
   objects specifying a pipeline of processes to be executed.
   See the PROCESS-SPEC mini-language below.
 
-PRINT-PROCESS-SPEC SPEC &OPTIONAL OUTPUT
+
+* `PRINT-PROCESS-SPEC SPEC &OPTIONAL OUTPUT`
+
   print a process specification to given OUTPUT
   into a portable form usable by a Unix shell.
   OUTPUT is as per FORMAT's stream output argument,
@@ -79,18 +81,26 @@ PRINT-PROCESS-SPEC SPEC &OPTIONAL OUTPUT
   a CONS to be parsed by PARSE-PROCESS-SPEC,
   or a string for a process-spec that has already been formatted.
 
-*CURRENT-HOST-NAMES*
+
+* `*CURRENT-HOST-NAMES*`
+
   a variable, a list of strings, the aliases for the localhost.
   You may need to initialize it if the defaults don't suffice.
 
-CURRENT-HOST-NAME-P X
+
+* `CURRENT-HOST-NAME-P X`
+
   a function, returns true if X is a string member of *CURRENT-HOST-NAMES*
 
-INITIALIZE-CURRENT-HOST-NAMES
+
+* `INITIALIZE-CURRENT-HOST-NAMES`
+
   function that initializes the *CURRENT-HOST-NAMES*
   with "localhost" and the results from $(hostname -s) and $(hostname -f).
 
-RUN CMD &KEY ON-ERROR TIME SHOW HOST OUTPUT
+
+* `RUN CMD &KEY ON-ERROR TIME SHOW HOST OUTPUT`
+
   RUN will execute the given command CMD, which can be
   a CONS to be parsed by PARSE-PROCESS-SPEC,
   a PROCESS-SPEC object already parsed,
@@ -125,37 +135,48 @@ RUN CMD &KEY ON-ERROR TIME SHOW HOST OUTPUT
   On Unix, simple commands on localhost are executed directly, but
   remote commands and pipes are executed by spawning a shell.
 
-RUN/NIL CMD &KEY ON-ERROR TIME SHOW HOST
+* `RUN/NIL CMD &KEY ON-ERROR TIME SHOW HOST`
+
   RUN/NIL is a shorthand for RUN with :INPUT :OUTPUT :ERROR-OUTPUT bound to NIL.
 
-RUN/S CMD &KEY ON-ERROR TIME SHOW HOST
+
+* `RUN/S CMD &KEY ON-ERROR TIME SHOW HOST`
+
   RUN/S is a shorthand for RUN with :OUTPUT bound to :STRING,
   returning as a string what the inferior command sent to its standard output.
 
-RUN/SS CMD &KEY ON-ERROR TIME SHOW HOST
+* `RUN/SS CMD &KEY ON-ERROR TIME SHOW HOST`
+
   RUN/S is a shorthand for RUN :OUTPUT :STRING/STRIPPED,
   just like a shell's `cmd` or $(cmd) would do.
 
-RUN/INTERACTIVE CMD &KEY ON-ERROR TIME SHOW HOST
-  RUN/INTERACTIVE is a shorthand for RUN with :INPUT :OUTPUT :ERROR-OUTPUT
-  all boud to :INTERACTIVE, so you may run commands that interact with users,
-  inheritting the stdin, stdout and stderr of the current process.
 
-RUN/LINES CMD &KEY ON-ERROR TIME SHOW HOST
+* `RUN/INTERACTIVE CMD &KEY ON-ERROR TIME SHOW HOST`
+
+  RUN/INTERACTIVE is a shorthand for RUN with :INPUT :OUTPUT :ERROR-OUTPUT
+  all bound to :INTERACTIVE, so you may run commands that interact with users,
+  inheritting the stdin, stdout and stderr of the current process.
+  RUN/I is a shorthand alias for RUN/INTERACTIVE
+
+* `RUN/LINES CMD &KEY ON-ERROR TIME SHOW HOST`
+
   run/lines is a shorthand for RUN :OUTPUT :LINES,
   returning as a list of one string per line (stripped of line-ending)
   what the inferior command sent to its standard output.
 
-*BACKEND*
+* `*BACKEND*`
+
   a variable to choose between backends. Currently, only supported are
   :AUTO (the default, using asdf-driver:run-program, and
   spawning a shell unless it's a simple process), and
   :SBCL (only available on #+(and sbcl sb-thread unix),
   doesn't need a shell but has some limitations such as
-  only supporting redirection of stdin, stdout, stderr).
+  only supporting redirection of stdin, stdout, stderr),
+  and is not recommended (and not actively supported at the moment).
 
 
-==== THE PROCESS-SPEC MINI-LANGUAGE ====
+The PROCESS-SPEC mini-language
+------------------------------
 
 This library offers a SEXP syntax to specify processes
 and pipelines of processes in the manner of Unix shells,
@@ -167,6 +188,7 @@ depending on its capabilities and on the complexity of the pipeline.
 
 SEXP mini-language
 
+```
 ;; A process is a pipe or a command
 process := pipe | or | and | progn | fork | command
 
@@ -207,6 +229,7 @@ redirection := (
  <& fd fd | >& fd fd | ;; redirect fds: the left one is the new number, the right one the old number.
  >& pn | >&! | ;; redirect both fd 1 and 2 to pathname (respectively, clobbering)
  >>& pn | >>&! ) ;; redirect both fd 1 and 2 to append to pathname (respectively, clobbering)
+```
 
 Note that these are all exported symbols from the INFERIOR-SHELL package,
 except that a few of them are also inherited from COMMON-LISP: < > -
@@ -221,9 +244,10 @@ in this context, a string represents itself (assuming it's already a printed pro
 and a cons is a specification in the minilanguage to be parsed with parse-process-spec first.
 
 
-==== TO DO ====
+TO DO
+-----
 
-Document it.
+Better document it.
 
 Have a complementary inferior-shell-watcher library that uses iolib to spawn
 pipes locally, and watch the subprocesses as part of the iolib event loop.
