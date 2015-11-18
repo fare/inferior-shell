@@ -131,7 +131,7 @@ that exports the following macros and functions:
   but strips any line-ending at the end of the results,
   just like a shell's ``cmd`` or `$(cmd)` would, and
   more options are accepted and you can define your own, as per
-  asdf-driver's slurp-input-stream protocol.
+  uiop's slurp-input-stream protocol.
   On Windows, `RUN` will not succeed for pipes, only for simple commands.
   On Unix, simple commands on localhost are executed directly, but
   remote commands and pipes are executed by spawning a shell.
@@ -171,7 +171,7 @@ that exports the following macros and functions:
 * `*BACKEND*`
 
   a variable to choose between backends. Currently, only supported are
-  `:AUTO` (the default, using asdf-driver:run-program, and
+  `:AUTO` (the default, using uiop:run-program, and
   spawning a shell unless it's a simple process), and
   `:SBCL` (only available on `#+(and sbcl sb-thread unix)`,
   doesn't need a shell but has some limitations such as
