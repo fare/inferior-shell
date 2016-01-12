@@ -2,7 +2,7 @@
 #-asdf3 (error "inferior-shell requires ASDF 3.0.3 or later")
 
 (defsystem "inferior-shell"
-  :version "2.0.3.3"
+  :version "2.0.3.4"
   :description "spawn local or remote processes and shell pipes"
   :author "Francois-Rene Rideau"
   :license "MIT"
@@ -18,9 +18,10 @@
    (:file "macros" :depends-on ("pkgdcl"))
    (:file "host" :depends-on ("pkgdcl"))
    (:file "run" :depends-on ("process-spec" "macros"))
-   (:file "run-generic" :depends-on ("process-spec" "macros"))
-   (:file "run-sbcl" :depends-on ("process-spec" "macros" "run-generic")
-          :if-feature (:and :sbcl :sb-thread :unix)))
+   ;; Disable these experiments for now:
+   #+(or) (:file "run-generic" :depends-on ("process-spec" "macros"))
+   #+(or) (:file "run-sbcl" :depends-on ("process-spec" "macros" "run-generic")
+                 :if-feature (:and :sbcl :sb-thread :unix)))
   :in-order-to ((test-op (load-op "inferior-shell/test")))
   :perform (test-op (o s) ;; symbol-call will only work if loaded with ASDF3
               (symbol-call :inferior-shell-test :test-suite)))
