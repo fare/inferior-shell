@@ -1,5 +1,3 @@
-#+xcvb (module (:depends-on ("pkgdcl")))
-
 (cl:in-package :inferior-shell)
 
 (in-readtable :fare-quasiquote)

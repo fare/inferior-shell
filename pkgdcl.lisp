@@ -1,5 +1,3 @@
-#+xcvb (module ())
-
 (uiop/package:define-package :inferior-shell
   (:mix :fare-utils :uiop :alexandria)
   (:use :cl :optima :named-readtables :fare-mop)

@@ -1,5 +1,3 @@
-#+xcvb (module (:depends-on ("macros" "process-spec")))
-
 (in-package :inferior-shell)
 
 (defvar *backend* :auto)

@@ -1,5 +1,3 @@
-#+xcvb (module (:depends-on ("pkgdcl")))
-
 (in-package :inferior-shell)
 
 ;;--- TODO: move these to FARE-UTILS ?

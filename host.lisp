@@ -1,5 +1,3 @@
-#+xcvb (module (:depends-on ("pkgdcl")))
-
 (in-package :inferior-shell)
 
 (defparameter *current-host-names* '("localhost"))

@@ -1,5 +1,3 @@
-#+xcvb (module (:depends-on ("/inferior-shell" :asdf "hu.dwim.stefil")))
-
 (in-package :cl)
 
 (defpackage :inferior-shell-test
