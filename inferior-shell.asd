@@ -18,10 +18,6 @@
    (:file "macros" :depends-on ("pkgdcl"))
    (:file "host" :depends-on ("pkgdcl"))
    (:file "run" :depends-on ("process-spec" "macros"))
-   ;; Disable these experiments for now:
-   #+(or) (:file "run-generic" :depends-on ("process-spec" "macros"))
-   #+(or) (:file "run-sbcl" :depends-on ("process-spec" "macros" "run-generic")
-                 :if-feature (:and :sbcl :sb-thread :unix)))
   :in-order-to ((test-op (load-op "inferior-shell/test")))
   :perform (test-op (o s) ;; symbol-call will only work if loaded with ASDF3
               (symbol-call :inferior-shell-test :test-suite)))
