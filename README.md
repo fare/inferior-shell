@@ -168,16 +168,6 @@ that exports the following macros and functions:
   returning as a list of one string per line (stripped of line-ending)
   what the inferior command sent to its standard output.
 
-* `*BACKEND*`
-
-  a variable to choose between backends. Currently, only supported are
-  `:AUTO` (the default, using uiop:run-program, and
-  spawning a shell unless it's a simple process), and
-  `:SBCL` (only available on `#+(and sbcl sb-thread unix)`,
-  doesn't need a shell but has some limitations such as
-  only supporting redirection of stdin, stdout, stderr),
-  and is not recommended (and not actively supported at the moment).
-
 
 The PROCESS-SPEC mini-language
 ------------------------------

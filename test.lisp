@@ -19,8 +19,4 @@
              "Hello, World!")))
 
 (deftest test-inferior-shell ()
-  (let ((*backend* :auto))
-    (do-test-inferior-shell))
-  #|#+(and sbcl sb-thread unix)
-  (let ((*backend* :sbcl))
-    (do-test-inferior-shell))|#)
+  (do-test-inferior-shell))

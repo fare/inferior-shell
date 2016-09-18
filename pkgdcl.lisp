@@ -11,5 +11,4 @@
    #:redirection #:file-redirection #:fd-redirection #:close-redirection
    #:! #:- #:< #:> #:<> #:>! #:>> #:>>! #:<& #:>& #:>&! #:>>&!
    #:>& #:>> #:>>& #:pipe #:or #:and #:progn #:fork
-   #:zglobcmd #:zglob
-   #:*backend*))
+   #:zglobcmd #:zglob))

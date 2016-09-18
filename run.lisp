@@ -1,7 +1,5 @@
 (in-package :inferior-shell)
 
-(defvar *backend* :auto)
-
 (defun on-host-spec (host spec)
   (if (current-host-name-p host)
       spec
@@ -29,7 +27,7 @@
              spec))))
     (apply 'run-program command keys)))
 
-(defun run-process-spec (spec &rest keys &key host backend &allow-other-keys)
+(defun run-process-spec (spec &rest keys &key host &allow-other-keys)
   (etypecase host
     (null
      (etypecase spec
@@ -38,12 +36,7 @@
        (cons
         (apply 'run-process-spec (parse-process-spec spec) keys))
        (process-spec
-        (ecase (or backend *backend*)
-          #+(and sbcl sb-thread unix)
-          ((:sbcl)
-           (apply 'sbcl-run spec keys))
-          ((:auto)
-           (apply 'run-spec spec keys))))))
+        (apply 'run-spec spec keys))))
     (string
      (apply 'run-process-spec (on-host-spec host spec) :host nil keys))
     (function
