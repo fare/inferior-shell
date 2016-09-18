@@ -21,6 +21,8 @@
           (etypecase command
             (direct-command-spec
              (command-arguments spec))
+            (command-spec
+             (strcat "exec " (print-process-spec spec)))
             (process-spec
              (print-process-spec spec))
             (string
