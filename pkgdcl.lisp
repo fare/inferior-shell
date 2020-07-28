@@ -1,6 +1,6 @@
 (uiop/package:define-package :inferior-shell
   (:mix :fare-utils :uiop :alexandria)
-  (:use :cl :optima :named-readtables :fare-mop)
+  (:use :cl :trivia :named-readtables :fare-mop)
   (:export
    #:run #:run/nil #:run/s #:run/ss #:run/interactive #:run/i #:run/lines
    #:simple-command-line-token #:token-string

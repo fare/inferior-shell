@@ -2,13 +2,13 @@
 #-asdf3 (error "inferior-shell requires ASDF 3.0.3 or later")
 
 (defsystem "inferior-shell"
-  :version "2.0.4"
+  :version "2.0.5"
   :description "spawn local or remote processes and shell pipes"
   :author "Francois-Rene Rideau"
   :license "MIT"
   :depends-on ((:version "asdf" "3.0.3") ; input and error-output redirection
                (:feature :sbcl (:require "sb-posix"))
-               "alexandria" "optima"
+               "alexandria" "trivia" "trivia.quasiquote"
                "fare-utils" "fare-quasiquote-extras" "fare-mop")
   :around-compile "uiop:call-with-safe-io-syntax" ;; ensures that quasiquote syntax doesn't escape
   :components
