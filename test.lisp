@@ -7,13 +7,6 @@
 
 (declaim (optimize (speed 1) (debug 3) (space 3)))
 
-(defmacro with-temp-file (symbol &rest body)
-  `(let ((,symbol (format nil "/tmp/inf-shell-file-~a" (random 100000))))
-     (run/ss `(rm ,,symbol) :on-error nil)
-     (unwind-protect
-          (progn ,@body)
-       (run/ss `(rm ,,symbol) :on-error nil))))
-
 (def-suite inferior-shell-test
   :description "Suite of tests for inferior shell.")
 
