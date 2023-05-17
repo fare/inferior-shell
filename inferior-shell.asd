@@ -23,6 +23,6 @@
               (symbol-call :inferior-shell-test :test-suite)))
 
 (defsystem "inferior-shell/test"
-  :depends-on ("inferior-shell" "hu.dwim.stefil")
+  :depends-on ("inferior-shell" "fiveam")
   :description "testing inferior-shell"
   :components ((:file "test")))
