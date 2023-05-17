@@ -60,7 +60,7 @@
                           (echo world))))))
 
 (def-test fork (:suite inferior-shell-test)
-  (with-temp-file file
+  (uiop:with-temporary-file (:pathname file)
     (run/ss `(echo (> ,file)))
     (run/ss `(fork (sleep "0.2") (echo a (> ,file))))
     (is (equal "" (run/ss `(cat ,file))))
@@ -74,7 +74,7 @@
 
 (def-test redirection (:suite inferior-shell-test)
   ;; TODO Test all other redirection methods.
-  (with-temp-file file
+  (uiop:with-temporary-file (:pathname file)
     (run/ss `(rm ,file) :on-error nil)
     (run/ss `(echo "1234567890" (>> ,file)))
     (is (equal "1234567890"
