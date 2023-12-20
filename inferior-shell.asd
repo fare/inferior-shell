@@ -20,7 +20,7 @@
    (:file "run" :depends-on ("process-spec" "macros")))
   :in-order-to ((test-op (load-op "inferior-shell/test")))
   :perform (test-op (o s) ;; symbol-call will only work if loaded with ASDF3
-              (symbol-call :inferior-shell-test :test-suite)))
+              (symbol-call :fiveam :run! (find-symbol* :inferior-shell-test :inferior-shell-test))))
 
 (defsystem "inferior-shell/test"
   :depends-on ("inferior-shell" "fiveam")

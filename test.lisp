@@ -1,7 +1,8 @@
 (in-package :cl)
 
 (defpackage :inferior-shell-test
-  (:use :cl :inferior-shell :fiveam))
+  (:use :cl :inferior-shell)
+  (:import-from :fiveam #:def-suite #:in-suite #:def-test #:is #:run!))
 
 (in-package :inferior-shell-test)
 
@@ -80,5 +81,3 @@
     (is (equal "abcdefghij"
                (run/ss `(cat ,file))))
     (run/ss `(rm ,file))))
-
-(run! 'inferior-shell-test::inferior-shell-test)
