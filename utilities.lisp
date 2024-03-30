@@ -54,7 +54,7 @@ Partial state accepted as input, too, for parsing in chunks."
         (cond
           ((eql char #\newline)
            (if lf (unpeek-done) (setf lf t)))
-          ((eql char #\cr)
+          ((eql char #\Return)
            (if (or cr lf) (unpeek-done) (setf cr t)))
           ((eql char eof)
            (cond
